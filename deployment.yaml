@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-devops-deployment
+  labels:
+    app: flask-devops-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flask-devops-app
+  template:
+    metadata:
+      labels:
+        app: flask-devops-app
+        tier: frontend
+    spec:
+      containers:
+        - name: flask-devops-project
+          image: rasheed3/flask-devops-project:latest
+          ports:
+            - containerPort: 5000
