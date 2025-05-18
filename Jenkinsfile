@@ -30,16 +30,16 @@ pipeline {
             }
         }
 
-        stage('Push') {
-            steps {
-                echo 'Pushing image to Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh """
-                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
-                        docker push $DOCKER_HUB_REPO:latest
-                    """
-                }
-            }
+       stage('Push') {
+    steps {
+        echo 'Pushing image to Docker Hub...'
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            sh 'echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin'
+            sh "docker push $DOCKER_HUB_REPO:latest"
+        }
+    }
+}
+
         }
 
         stage('Deploy to Minikube') {
