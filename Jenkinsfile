@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_HUB_REPO = "rasheed3/flask-devops-project"
         CONTAINER_NAME = "flask-devops-project"
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
     }
 
     stages {
@@ -30,16 +29,16 @@ pipeline {
             }
         }
 
-       stage('Push') {
-    steps {
-        echo 'Pushing image to Docker Hub...'
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh 'echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin'
-            sh "docker push $DOCKER_HUB_REPO:latest"
-        }
-    }
-}
-
+        stage('Push') {
+            steps {
+                echo 'Pushing image to Docker Hub...'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        def image = docker.image("$DOCKER_HUB_REPO:latest")
+                        image.push()
+                    }
+                }
+            }
         }
 
         stage('Deploy to Minikube') {
